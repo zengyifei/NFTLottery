@@ -2,8 +2,8 @@
 
 - proxy.sol: `set/upgrade logic contract implementation or delegate call logic contract method`
 - random-number-generator.sol: `request chainlink to get a random number`
-- nft-lottery-factory.sol: `the implementation of logic contract which can set treasury and create new nft lottery`
-- nft-lottery.sol: `buy tickets and claim nft when lottery opened`
+- nft-lottery-factory.sol: `the implementation of logic contract which can set treasury,lott template and create nft lottery by template`
+- nft-lottery.sol: `lott template implementation which contains the logic of buy tickets and claim nft`
 
 #### Deployed contracts on Rinkeby
 solidity compiler: 0.8.7+commit.e28d00a7

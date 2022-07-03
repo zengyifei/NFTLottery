@@ -25,6 +25,7 @@ contract NFTLottery is
     INFTLotteryFactory public factory;
     uint256 public fee;
     uint256 public randomNumber;
+    address[] users;
     bool public winnerClaimed;
     bool public ownerClaimed;
 
@@ -81,6 +82,9 @@ contract NFTLottery is
         uint256 give = count / 10;
         uint256 ticketStartIdx = lottery.soldCount + lottery.giveCount;
         uint256 ticketEndIdx = ticketStartIdx + count + give - 1;
+        if (userTicketIdxs[msg.sender].length == 0) {
+            users.push(msg.sender);
+        }
         userTicketIdxs[msg.sender].push([ticketStartIdx, ticketEndIdx]);
         emit BuyTickets(msg.sender, ticketStartIdx, ticketEndIdx);
 
@@ -168,6 +172,10 @@ contract NFTLottery is
         returns (uint256[][] memory)
     {
         return userTicketIdxs[user];
+    }
+
+    function getUsers() public view returns (address[] memory) {
+        return users;
     }
 
     function onERC721Received(

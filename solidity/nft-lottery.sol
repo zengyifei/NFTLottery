@@ -23,7 +23,7 @@ contract NFTLottery is
 
     LotteryInfo public lottery;
     INFTLotteryFactory public factory;
-    uint256 public fee;
+    uint256 public fee; // range [0, 100]
     uint256 public randomNumber;
     address[] users;
     bool public winnerClaimed;

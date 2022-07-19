@@ -24,29 +24,17 @@ contract NFTLotteryFactory is
     Initializable,
     OwnableUpgradeable
 {
-    mapping(address => bool) members;
-    mapping(address => bool) lotteries;
-    mapping(address => address[]) userLotteries;
+    mapping(address => bool) isLottery;
+    address[] public allLottery;
 
     IRandomNumberGenerator rng;
     address public template;
 
     address public operator;
     address payable treasury;
-    uint256 public treasuryFee;
     uint256 openLotteryReward;
 
     event LotteryCreated(address indexed creator, address pool);
-
-    modifier onlyMember() {
-        require(
-            members[msg.sender] ||
-                msg.sender == operator ||
-                msg.sender == owner(),
-            "Only member"
-        );
-        _;
-    }
 
     modifier onlyOperator() {
         require(
@@ -61,8 +49,7 @@ contract NFTLotteryFactory is
         address _randomGenerator,
         address _operator,
         address payable _treasury,
-        uint256 _openLotteryReward,
-        uint256 _treasuryFee
+        uint256 _openLotteryReward
     ) external initializer {
         __Ownable_init();
 
@@ -71,7 +58,6 @@ contract NFTLotteryFactory is
         template = _template;
         rng = IRandomNumberGenerator(_randomGenerator);
         openLotteryReward = _openLotteryReward;
-        treasuryFee = _treasuryFee;
     }
 
     function createNFTLottery(
@@ -82,8 +68,9 @@ contract NFTLotteryFactory is
         uint256 fee,
         uint64 startTime,
         uint64 endTime
-    ) external onlyMember returns (address) {
+    ) external onlyOperator returns (address) {
         INFTLottery lottery = INFTLottery(Clones.clone(template));
+
         LotteryInfo memory info;
         info.nftAddress = nftAddress;
         info.nftId = nftId;
@@ -91,6 +78,7 @@ contract NFTLotteryFactory is
         info.ticketCount = ticketCount;
         info.startTime = startTime;
         info.endTime = endTime;
+
         lottery.initialize(this, fee, info);
         lottery.transferOwnership(msg.sender);
         IERC721(nftAddress).safeTransferFrom(
@@ -98,8 +86,8 @@ contract NFTLotteryFactory is
             address(lottery),
             nftId
         );
-        lotteries[address(lottery)] = true;
-        userLotteries[msg.sender].push(address(lottery));
+        isLottery[address(lottery)] = true;
+        allLottery.push(address(lottery));
 
         emit LotteryCreated(msg.sender, address(lottery));
         return address(lottery);
@@ -111,11 +99,6 @@ contract NFTLotteryFactory is
 
     function setTemplate(address _template) external onlyOperator {
         template = _template;
-    }
-
-    function setTreasuryFee(uint256 f) external onlyOperator {
-        require(f < 10000, "Too large");
-        treasuryFee = f;
     }
 
     function setTreasury(address payable _treasury) external onlyOperator {
@@ -150,37 +133,13 @@ contract NFTLotteryFactory is
         return openLotteryReward;
     }
 
-    function addMembers(address[] memory addrs) external onlyOperator {
-        for (uint256 i = 0; i < addrs.length; i++) {
-            members[addrs[i]] = true;
-        }
-    }
-
-    function removeMembers(address[] memory addrs) external onlyOperator {
-        for (uint256 i = 0; i < addrs.length; i++) {
-            delete members[addrs[i]];
-        }
-    }
-
-    function isMember(address addr) external view returns (bool) {
-        return members[addr];
-    }
-
-    function getUserLotties(address user)
-        external
-        view
-        returns (address[] memory)
-    {
-        return userLotteries[user];
-    }
-
-    function isLottery(address addr) external view returns (bool) {
-        return lotteries[addr];
-    }
-
     function requestRandomNumber() external override {
-        require(lotteries[msg.sender], "Only lottery");
+        require(isLottery[msg.sender], "Only lottery");
         rng.requestRandomNumber(IRandomNumberReceiver(msg.sender));
+    }
+
+    function allLotteryLength() external view returns (uint256) {
+        return allLottery.length;
     }
 
     function withdraw() public onlyOwner {

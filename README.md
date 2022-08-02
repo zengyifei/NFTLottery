@@ -18,7 +18,7 @@
 | - | - |
 | [NFTLottery](https://rinkeby.etherscan.io/address/0x88ac1d1945d462fab9cdaae0d780cfb92733de0f) | [0x6d6403a2f063eaa07cffefe925dfcae561511424](https://rinkeby.etherscan.io/address/0x6d6403a2f063eaa07cffefe925dfcae561511424)|
 | RandomNumberGenerator | [0xD978c5Ccfd54d08f77984eC095a8d05c513a19C8](https://rinkeby.etherscan.io/address/0xD978c5Ccfd54d08f77984eC095a8d05c513a19C8) |
-| NFTLotteryFactory | [0x331f7f9004c98f019f42d6122762c152808cd9e7](https://rinkeby.etherscan.io/address/0x331f7f9004c98f019f42d6122762c152808cd9e7) |
-| NFTLotteryFactoryProxy | [0x1c7f41fa4b297cac6beedb9a4cf5b6cb4a295974](https://rinkeby.etherscan.io/address/0x1c7f41fa4b297cac6beedb9a4cf5b6cb4a295974) |
+| NFTLotteryFactory | [0xad8de40c50db52b60423b7d7e3306763ec5dc2eb](https://rinkeby.etherscan.io/address/0xad8de40c50db52b60423b7d7e3306763ec5dc2eb) |
+| NFTLotteryFactoryProxy | [0xf8eecd58530be7611e7b2df1d3e17b825644e8fd](https://rinkeby.etherscan.io/address/0xf8eecd58530be7611e7b2df1d3e17b825644e8fd) |
 
 

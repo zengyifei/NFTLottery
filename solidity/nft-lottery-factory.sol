@@ -30,16 +30,16 @@ contract NFTLotteryFactory is
     IRandomNumberGenerator rng;
     address public template;
 
-    address public operator;
     address payable treasury;
     uint256 openLotteryReward;
+    mapping(address => bool) public isWhitelist;
 
     event LotteryCreated(address indexed creator, address pool);
 
-    modifier onlyOperator() {
+    modifier onlyWhitelist() {
         require(
-            msg.sender == operator || msg.sender == owner(),
-            "Only operator"
+            isWhitelist[msg.sender] || msg.sender == owner(),
+            "Only whitelist"
         );
         _;
     }
@@ -47,14 +47,12 @@ contract NFTLotteryFactory is
     function initialize(
         address _template,
         address _randomGenerator,
-        address _operator,
         address payable _treasury,
         uint256 _openLotteryReward
     ) external initializer {
         __Ownable_init();
 
         treasury = _treasury;
-        operator = _operator;
         template = _template;
         rng = IRandomNumberGenerator(_randomGenerator);
         openLotteryReward = _openLotteryReward;
@@ -68,7 +66,7 @@ contract NFTLotteryFactory is
         uint256 fee,
         uint64 startTime,
         uint64 endTime
-    ) external onlyOperator returns (address) {
+    ) external onlyWhitelist returns (address) {
         INFTLottery lottery = INFTLottery(Clones.clone(template));
 
         LotteryInfo memory info;
@@ -93,15 +91,11 @@ contract NFTLotteryFactory is
         return address(lottery);
     }
 
-    function setOperator(address _operator) external onlyOwner {
-        operator = _operator;
-    }
-
-    function setTemplate(address _template) external onlyOperator {
+    function setTemplate(address _template) external onlyOwner {
         template = _template;
     }
 
-    function setTreasury(address payable _treasury) external onlyOperator {
+    function setTreasury(address payable _treasury) external onlyOwner {
         treasury = _treasury;
     }
 
@@ -109,10 +103,7 @@ contract NFTLotteryFactory is
         return treasury;
     }
 
-    function setRandomGenerator(address _randomGenerator)
-        external
-        onlyOperator
-    {
+    function setRandomGenerator(address _randomGenerator) external onlyOwner {
         rng = IRandomNumberGenerator(_randomGenerator);
     }
 
@@ -125,7 +116,7 @@ contract NFTLotteryFactory is
         return rng;
     }
 
-    function setOpenLotteryReward(uint256 reward) external onlyOperator {
+    function setOpenLotteryReward(uint256 reward) external onlyOwner {
         openLotteryReward = reward;
     }
 
@@ -140,6 +131,18 @@ contract NFTLotteryFactory is
 
     function allLotteryLength() external view returns (uint256) {
         return allLottery.length;
+    }
+
+    function addWhitelists(address[] memory addrs) external onlyOwner {
+        for (uint256 i = 0; i < addrs.length; i++) {
+            isWhitelist[addrs[i]] = true;
+        }
+    }
+
+    function removeWhitelists(address[] memory addrs) external onlyOwner {
+        for (uint256 i = 0; i < addrs.length; i++) {
+            delete isWhitelist[addrs[i]];
+        }
     }
 
     function withdraw() public onlyOwner {

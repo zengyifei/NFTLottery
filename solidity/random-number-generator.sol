@@ -73,6 +73,7 @@ contract RandomNumberGenerator is
         requestConfirmations = _requestConfirmations;
     }
 
+    // request a random number, once number is generated, `fulfillRandomWords` will be called 
     function requestRandomNumber(IRandomNumberReceiver receiver) external override {
         require(msg.sender == lotteryFactory, "Only LotteryFactory");
         // Will revert if subscription is not set and funded.

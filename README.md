@@ -22,3 +22,7 @@
 | NFTLotteryFactoryProxy | [0xf8eecd58530be7611e7b2df1d3e17b825644e8fd](https://rinkeby.etherscan.io/address/0xf8eecd58530be7611e7b2df1d3e17b825644e8fd) |
 
 
+### MainProcessCall
+1. member in whitelist calls `factory.createNFTLottery` to create new lottery
+2. user calls `lottery.buyTickets` until tickets are sold out
+3. `lottery.openLottery` is called and it will call `factory.requestRandomNumber`.The factory will confirm and call `randomNumberGeneraor.requestRandomNumber(receiverAddr)` and set `receiverAddr = lottery`. Once number is generated, `lottery.receiveRandomNumber` will be called and update lottery status.
